@@ -3,13 +3,14 @@ Provides address lookup and validation to be used by CHIPS and frontend CH servi
 
 ## Building and Running Locally using Docker
 
-1. Clone [Docker CHS Development](https://github.com/companieshouse/docker-chs-development) and
-   follow the steps in the
-   README.
-2. Build Docker image using 'mvn package -Dskip.unit.tests=true -Dskip.integration.tests=true jib:dockerBuild'
-2. Enable the service using the command `chs-dev services enable primary-search-api`
+1. Clone [Docker CHS Development](https://github.com/companieshouse/docker-chs-development) and follow the steps in the README.
+2. Enable the service using the command `chs-dev services enable address-lookup-service`
 3. Boot up the services' containers on docker using tilt `chs-dev up`.
 
+## Building the docker image
+```
+mvn package -Dskip.unit.tests=true -Dskip.integration.tests=true jib:dockerBuild
+```
 
 ## Environment variables
 
