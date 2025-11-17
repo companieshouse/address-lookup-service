@@ -85,6 +85,12 @@
             <version>11.0.14</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-websocket</artifactId>
+            <version>11.0.14</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
