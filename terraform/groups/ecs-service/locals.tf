@@ -4,22 +4,13 @@ locals {
   name_prefix                 = "${local.stack_name}-${var.environment}"
   global_prefix               = "global-${var.environment}"
   service_name                = "address-lookup-service"
-  service_name_comparison     = "address-lookup-service-comparison"
   container_port              = "8080"
   eric_port                   = "10000"
   docker_repo                 = "address-lookup-service"
   kms_alias                   = "alias/${var.aws_profile}/environment-services-kms"
-  lb_listener_rule_priority   = 990
+  lb_listener_rule_priority   = 991
   lb_listener_paths           = [
-      "/search*"
-  ]
-  lb_listener_rule_priority_comparison = 25
-  lb_listener_paths_comparison = [
-    "/search*",
-    "/disqualified-search/disqualified-officers/*",
-    "/disqualified-search/delete/*",
-    "/officers-search/officers/*",
-    "/company-search/companies/*"
+      "/address-lookup-service/*"
   ]
   healthcheck_path            = "/healthcheck" # healthcheck path for address-lookup-service
   healthcheck_matcher         = "200"
