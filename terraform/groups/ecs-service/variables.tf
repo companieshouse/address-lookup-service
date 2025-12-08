@@ -32,11 +32,6 @@ variable "desired_task_count" {
   description = "The desired ECS task count for this service"
   default     = 1 # defaulted low for dev environments, override for production
 }
-variable "desired_task_count_comparison" {
-  type        = number
-  description = "The desired ECS task count for the comparison service"
-  default     = 1 # defaulted low for dev environments, override for production
-}
 variable "min_task_count" {
   default     = 1
   type        = number
@@ -66,7 +61,7 @@ variable "eric_memory" {
 variable "max_task_count" {
   type        = number
   description = "The maximum number of tasks for this service."
-  default     = 10
+  default     = 10154
 }
 
 variable "use_fargate" {
@@ -154,16 +149,6 @@ variable "address_lookup_service_version" {
   type        = string
   description = "The version of the address-lookup-service container to run."
 }
-variable "address_lookup_service_comparison_version" {
-  type        = string
-  description = "The version of the comparison-branch address-lookup-service container to run."
-}
-variable "enable_comparison_public_private_lbs" {
-  type        = bool
-  default     = false
-  description = "Swaps the main and comparison service's assigned ALBs from public/private to internal and vice versa."
-}
-
 variable "eric_version" {
   type        = string
   description = "The version of the eric container to run."

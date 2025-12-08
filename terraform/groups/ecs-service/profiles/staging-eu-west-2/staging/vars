@@ -12,9 +12,9 @@ eric_cpus = 256
 eric_memory = 512
 
 # scaling configs default
-desired_task_count = 16
-min_task_count = 16
-max_task_count = 48
+desired_task_count = 1
+min_task_count = 1
+max_task_count = 16
 
 # Scheduled scaling of tasks
 service_autoscale_enabled  = true

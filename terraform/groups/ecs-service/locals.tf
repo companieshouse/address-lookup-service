@@ -1,6 +1,6 @@
 # Define all hardcoded local variable and local variables looked up from data resources
 locals {
-  stack_name                  = "search-service" # this must match the stack name the service deploys into
+  stack_name                  = "address-lookup" # this must match the stack name the service deploys into
   name_prefix                 = "${local.stack_name}-${var.environment}"
   global_prefix               = "global-${var.environment}"
   service_name                = "address-lookup-service"
@@ -17,7 +17,6 @@ locals {
   vpc_name                    = local.stack_secrets["vpc_name"]
   s3_config_bucket            = data.vault_generic_secret.shared_s3.data["config_bucket_name"]
   app_environment_filename    = "address-lookup-service.env"
-  app_environment_filename_comparison = "address-lookup-service-comparison.env"
   use_set_environment_files   = var.use_set_environment_files
   application_subnet_ids      = data.aws_subnets.application.ids
   application_subnet_pattern = local.stack_secrets["application_subnet_pattern"]
