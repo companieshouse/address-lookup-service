@@ -1,0 +1,17 @@
+environment = "live"
+aws_profile = "live-eu-west-2"
+
+# service configs
+use_set_environment_files = true
+log_level = "info"
+
+# default allocation
+required_cpus = 768
+required_memory = 1536
+eric_cpus = 256
+eric_memory = 512
+
+# scaling configs default
+desired_task_count = 1
+min_task_count = 1
+max_task_count = 24
