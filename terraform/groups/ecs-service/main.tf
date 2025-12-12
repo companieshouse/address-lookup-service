@@ -98,7 +98,7 @@ module "ecs-service" {
 }
 
 module "secrets" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/secrets?ref=1.0.361"
+  source = "git@github.com:companieshouse/terraform-modules//aws/parameter-store?ref=1.0.361"
 
   name_prefix = "${local.service_name}-${var.environment}"
   environment = var.environment
