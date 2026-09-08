@@ -88,7 +88,7 @@ class AddressServiceTest {
     }
 
     @Test
-    void testSearchSingleAddressByPostcodeWithNormalization() throws Exception {
+    void testSearchSingleAddressByPostcodeWithNormalisation() throws Exception {
         // Test that "SW1A 1AA" (with space) matches database entry "SW1A1AA" (without space)
         when(addressRepository.findByPostcode("SW1A 1AA")).thenReturn(List.of());
         when(addressRepository.findAll()).thenReturn(List.of(testEntity));
@@ -135,7 +135,7 @@ class AddressServiceTest {
     }
 
     @Test
-    void testSearchMultipleAddressesByPostcodeWithNormalization() throws Exception {
+    void testSearchMultipleAddressesByPostcodeWithNormalisation() throws Exception {
         // Test that "SW1A 1AA" (with space) matches database entry "SW1A1AA" (without space)
         List<AddressEntity> entities = List.of(testEntity, testEntity);
 
