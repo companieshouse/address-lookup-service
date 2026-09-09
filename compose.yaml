@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgis/postgis:18-3.6
+    platform: linux/amd64
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: address_lookup
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d address_lookup"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

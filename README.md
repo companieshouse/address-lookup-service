@@ -12,6 +12,37 @@ Provides address lookup and validation to be used by CHIPS and frontend CH servi
 mvn package -Dskip.unit.tests=true -Dskip.integration.tests=true jib:dockerBuild
 ```
 
+## Running locally
+
+The application uses Spring Boot Docker Compose support to start a local PostGIS
+Postgres database from `compose.yaml`. The `local` profile uses
+`db.changelog-local.yaml`, which creates and seeds the `add_gb_royalmailaddress`
+table from `gb_royalmailaddress.csv`.
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+Look up addresses by postcode:
+
+```bash
+curl "http://localhost:8080/address-lookup-api/addresses?postcode=WF2%207QD"
+```
+
+Look up addresses in the legacy response format:
+
+```bash
+curl "http://localhost:8080/address-lookup-api/multiple-addresses?postcode=WF2%207QD"
+```
+
+The local database is exposed on port `5433` to avoid clashing with any existing
+Postgres running on the default `5432` port.
+
+Without the `local` profile, Liquibase uses `db.changelog-master.yaml`, which
+creates the schema without loading seed data. Provide `SPRING_DATASOURCE_URL`,
+`SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD` when connecting to
+an externally hosted database.
+
 ## Environment variables
 
 | Variable              | Description                                                                | Example (from docker-chs-development) |
@@ -20,6 +51,10 @@ mvn package -Dskip.unit.tests=true -Dskip.integration.tests=true jib:dockerBuild
 | LOGLEVEL              | The level of log messages output to the logs.                              | debug                                 |
 | HUMAN_LOG             | A boolean value to enable more readable log messages.                      | 1                                     |
 | ADDRESS_LOOKUP_URL    | The URL of the elasticsearch 6 cluster.                                    | http://elasticsearch:4001             |
+| DOCKER_COMPOSE_ENABLED | Whether Spring Boot should start local Docker Compose services.             | false                                 |
+| SPRING_DATASOURCE_URL | JDBC URL for the address lookup Postgres database.                          | jdbc:postgresql://localhost:5433/address_lookup |
+| SPRING_DATASOURCE_USERNAME | Username for the address lookup Postgres database.                    | postgres                              |
+| SPRING_DATASOURCE_PASSWORD | Password for the address lookup Postgres database.                    | postgres                              |
 
 ## Building the docker image
 
