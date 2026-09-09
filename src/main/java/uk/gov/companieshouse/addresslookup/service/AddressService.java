@@ -38,10 +38,10 @@ public class AddressService {
     }
 
     /**
-     * Normalize postcode by removing all whitespace and converting to uppercase
+     * Normalise postcode by removing all whitespace and converting to uppercase
      * Allows matching "SW1A 1AA" with "SW1A1AA"
      */
-    private String normalisePostcode(String postcode) {
+    private String normalizePostcode(String postcode) {
         if (postcode == null || postcode.isEmpty()) {
             return "";
         }
@@ -53,9 +53,9 @@ public class AddressService {
      * Finds all addresses where the postcode matches ignoring spaces
      */
     private List<AddressEntity> filterByNormalizedPostcode(List<AddressEntity> addresses, String inputPostcode) {
-        String normalized = normalisePostcode(inputPostcode);
+        String normalized = normalizePostcode(inputPostcode);
         return addresses.stream()
-                .filter(addr -> normalisePostcode(addr.getPostcode()).equals(normalized))
+                .filter(addr -> normalizePostcode(addr.getPostcode()).equals(normalized))
                 .collect(Collectors.toList());
     }
 
