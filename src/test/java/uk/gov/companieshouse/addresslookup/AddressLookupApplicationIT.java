@@ -79,6 +79,18 @@ class AddressLookupApplicationIT {
     }
 
     @Test
+    void shouldReturnIslAddressesForPostcode() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/addresses")
+                        .queryParam("postcode", "BT1 1AR")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalResults").value(1))
+                .andExpect(jsonPath("$.addresses[0].udprn").value(3073963))
+                .andExpect(jsonPath("$.addresses[0].postcode").value("BT1 1AR"));
+    }
+
+    @Test
     void shouldReturnLegacyAddressesForPostcode() throws Exception {
         this.mockMvc.perform(get("/address-lookup-api/multiple-addresses")
                         .queryParam("postcode", "WF2 7QD")
@@ -105,6 +117,20 @@ class AddressLookupApplicationIT {
     }
 
     @Test
+    void shouldReturnLegacyCountryFromIslBuiltAddress() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/multiple-addresses")
+                        .queryParam("postcode", "BT11AR")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].postcode").value("BT1 1AR"))
+                .andExpect(jsonPath("$[0].premise").value("20"))
+                .andExpect(jsonPath("$[0].addressLine1").value("DONEGALL QUAY"))
+                .andExpect(jsonPath("$[0].postTown").value("BELFAST"))
+                .andExpect(jsonPath("$[0].country").value("GB-NIR"));
+    }
+
+    @Test
     void shouldReturnLegacyAddressWithoutPremiseForPostcode() throws Exception {
         this.mockMvc.perform(get("/address-lookup-api/postcode")
                         .queryParam("postcode", "WF2 7QD")
@@ -116,6 +142,20 @@ class AddressLookupApplicationIT {
                 .andExpect(jsonPath("$.addressLine1").value("WOODMOOR ROAD"))
                 .andExpect(jsonPath("$.postTown").value("WAKEFIELD"))
                 .andExpect(jsonPath("$.country").value("GB-ENG"));
+    }
+
+    @Test
+    void shouldReturnIslLegacyAddressWithoutPremiseForPostcode() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .queryParam("postcode", "BT11AR")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.postcode").value("BT1 1AR"))
+                .andExpect(jsonPath("$.premise").doesNotExist())
+                .andExpect(jsonPath("$.addressLine1").value("DONEGALL QUAY"))
+                .andExpect(jsonPath("$.postTown").value("BELFAST"))
+                .andExpect(jsonPath("$.country").value("GB-NIR"));
     }
 
     @Test
