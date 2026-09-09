@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-seed-gb-royalmailaddress
+      author: address-lookup-api
+      changes:
+        - loadData:
+            file: db/changelog/data/gb_royalmailaddress.csv
+            tableName: add_gb_royalmailaddress
+            separator: ","
+            quotchar: '"'
+            nullPlaceholder: "NULL"
+            usePreparedStatements: false
