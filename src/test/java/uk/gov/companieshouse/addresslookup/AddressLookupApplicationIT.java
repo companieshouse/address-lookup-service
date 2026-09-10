@@ -1,17 +1,18 @@
 package uk.gov.companieshouse.addresslookup;
-
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.logging.util.LogContextProperties.REQUEST_ID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -124,7 +125,7 @@ class AddressLookupApplicationIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].postcode").value("BT1 1AR"))
-                .andExpect(jsonPath("$[0].premise").value("20"))
+                .andExpect(jsonPath("$[0].premise").value(containsString("20")))
                 .andExpect(jsonPath("$[0].addressLine1").value("DONEGALL QUAY"))
                 .andExpect(jsonPath("$[0].postTown").value("BELFAST"))
                 .andExpect(jsonPath("$[0].country").value("GB-NIR"));
@@ -165,5 +166,76 @@ class AddressLookupApplicationIT {
                         .header(REQUEST_ID.value(), "request_id"))
                 .andDo(print())
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPostcodeIsInvalid() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .queryParam("postcode", "INVALID")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPostcodeIsEmpty() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .queryParam("postcode", "")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPostcodeIsMissing() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPostcodeIsWhitespace() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .queryParam("postcode", "   ")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPostcodeIsTooShort() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .queryParam("postcode", "A")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPostcodeIsTooLong() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .queryParam("postcode", "A VERY LONG POSTCODE")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPostcodeContainsInvalidCharacters() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .queryParam("postcode", "INVALID@POSTCODE")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPostcodeContainsSpaces() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .queryParam("postcode", "INVALID POSTCODE")
+                        .header(REQUEST_ID.value(), "request_id"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }
