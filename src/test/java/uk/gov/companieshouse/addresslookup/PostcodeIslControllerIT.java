@@ -1,9 +1,9 @@
 package uk.gov.companieshouse.addresslookup;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static uk.gov.companieshouse.logging.util.LogContextProperties.REQUEST_ID;
 
 import org.junit.jupiter.api.Test;
@@ -13,12 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+/**
+ * Integration tests for the /postcode endpoint with ISL (Northern Ireland) postcodes.
+ * Tests the single address lookup without premise for Northern Ireland, including validation edge cases.
+ */
 @AutoConfigureMockMvc
 @SpringBootTest(
         classes = Application.class,
@@ -28,7 +31,7 @@ import org.testcontainers.utility.DockerImageName;
                 "spring.liquibase.change-log=classpath:db/changelog/db.changelog-local.yaml"
         })
 @Testcontainers
-class AddressLookupApplicationIT {
+class PostcodeIslControllerIT {
 
     @SuppressWarnings("resource")
     @Container
@@ -47,20 +50,22 @@ class AddressLookupApplicationIT {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext context;
+    // ========================
+    // Happy Path Tests
+    // ========================
 
     @Test
-    void shouldLoadApplicationContext() {
-        assertNotNull(context);
-    }
-
-    @Test
-    void shouldReturn200FromGetHealthEndpoint() throws Exception {
-        this.mockMvc.perform(get("/address-lookup-api/healthcheck")
+    void shouldReturnIslLegacyAddressWithoutPremiseForPostcode() throws Exception {
+        this.mockMvc.perform(get("/address-lookup-api/postcode")
+                        .queryParam("postcode", "BT11AR")
                         .header(REQUEST_ID.value(), "request_id"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string("{\"status\":\"UP\"}"));
+                .andExpect(jsonPath("$.postcode").value("BT1 1AR"))
+                .andExpect(jsonPath("$.premise").doesNotExist())
+                .andExpect(jsonPath("$.addressLine1").value("DONEGALL QUAY"))
+                .andExpect(jsonPath("$.postTown").value("BELFAST"))
+                .andExpect(jsonPath("$.country").value("GB-NIR"));
     }
+
 }
